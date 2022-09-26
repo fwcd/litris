@@ -1,4 +1,4 @@
-use lighthouse_client::LIGHTHOUSE_SIZE;
+use lighthouse_client::{Frame, LIGHTHOUSE_ROWS, LIGHTHOUSE_COLS, Pos, Color};
 
 use super::Board;
 
@@ -6,7 +6,7 @@ use super::Board;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct State {
     /// The game board.
-    board: Board<LIGHTHOUSE_SIZE>,
+    board: Board<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>,
 }
 
 impl State {
@@ -14,6 +14,15 @@ impl State {
     pub fn new() -> Self {
         State {
             board: Board::new(),
+        }
+    }
+
+    /// Renders the state to the given frame.
+    pub fn render_to(&self, frame: &mut Frame) {
+        for y in 0..LIGHTHOUSE_ROWS {
+            for x in 0..LIGHTHOUSE_COLS {
+                frame.set(x, y, self.board[Pos::new(x as i32, y as i32)].unwrap_or(Color::BLACK))
+            }
         }
     }
 }
