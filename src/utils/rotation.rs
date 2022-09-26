@@ -1,6 +1,7 @@
 use std::ops::Mul;
 
 /// An 2D rotation into one of the four cardinal directions.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Rotation {
     /// The integer matrix representing the corresponding linear transformation.
     matrix: [i32; 4],
@@ -31,5 +32,33 @@ impl Rotation {
     /// Creates a new rotation from the given matrix.
     pub const fn new(matrix: [i32; 4]) -> Self {
         Self { matrix }
+    }
+}
+
+impl Mul<Rotation> for Rotation {
+    type Output = Rotation;
+
+    fn mul(self, rhs: Self) -> Self {
+        // Standard 2x2 matrix multiplication
+        Self::new([
+            self.matrix[0] * rhs.matrix[0] + self.matrix[1] * rhs.matrix[2],
+            self.matrix[0] * rhs.matrix[1] + self.matrix[1] * rhs.matrix[3],
+            self.matrix[2] * rhs.matrix[0] + self.matrix[3] * rhs.matrix[2],
+            self.matrix[2] * rhs.matrix[1] + self.matrix[3] * rhs.matrix[3],
+        ])
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Rotation;
+
+    #[test]
+    fn test_matmul() {
+        assert_eq!(Rotation::IDENTITY * Rotation::IDENTITY, Rotation::IDENTITY);
+        assert_eq!(Rotation::IDENTITY * Rotation::CW_90, Rotation::CW_90);
+        assert_eq!(Rotation::CW_90 * Rotation::CW_90, Rotation::CW_180);
+        assert_eq!(Rotation::CW_90 * Rotation::CW_180, Rotation::CW_270);
+        assert_eq!(Rotation::CW_180 * Rotation::CW_180, Rotation::IDENTITY);
     }
 }
