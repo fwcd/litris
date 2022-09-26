@@ -442,9 +442,9 @@ checksum = "c0f80d65747a3e43d1596c7c5492d95d5edddaabd45a7fcdb02b95f644164966"
 
 [[package]]
 name = "lighthouse-client"
-version = "0.3.1"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca3b39f3cb765dfebd9bba6d89fae0761c8a259ad4ac73cca863d408682074b5"
+checksum = "f5e7f7fc87715d9ef079080ee5d208bc1ac705fa3334f8fe0f18a8bf2a86287c"
 dependencies = [
  "async-tungstenite",
  "futures",

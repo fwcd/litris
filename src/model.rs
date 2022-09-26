@@ -1,6 +1,4 @@
-use lighthouse_client::{Pos, Color, LIGHTHOUSE_SIZE};
-
-use crate::utils::Rotation;
+use lighthouse_client::{Pos, Color, LIGHTHOUSE_SIZE, Rotation};
 
 /// A game piece composed of four pixels connected orthogonally.
 pub struct Tetromino {
