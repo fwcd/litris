@@ -1,4 +1,4 @@
-use lighthouse_client::{Pos, Color, YELLOW, CYAN, MAGENTA};
+use lighthouse_client::{Pos, Color};
 
 /// A game piece composed of four pixels connected orthogonally.
 pub struct Tetromino {
@@ -15,35 +15,35 @@ impl Tetromino {
         Pos::new(0, 0),
         Pos::new(1, 0),
         Pos::new(2, 0),
-    ], CYAN);
+    ], Color::CYAN);
     /// The 4x4 square tetromino. Horizontally and vertically symmetric.
     pub const SQUARE: Self = Self::new([
         Pos::new(0, 0),
         Pos::new(1, 0),
         Pos::new(0, 1),
         Pos::new(1, 1),
-    ], YELLOW);
+    ], Color::YELLOW);
     /// The T-tetromino. Symmetric along the vertical axis.
     pub const T: Self = Self::new([
         Pos::new(-1, 0),
         Pos::new(0, 0),
         Pos::new(1, 0),
         Pos::new(1, 1),
-    ], MAGENTA);
+    ], Color::MAGENTA);
     /// The L-tetromino.
     pub const L: Self = Self::new([
         Pos::new(0, -1),
         Pos::new(0, 0),
         Pos::new(0, 1),
         Pos::new(1, 1),
-    ], MAGENTA);
+    ], Color::MAGENTA);
     /// The skew tetromino.
     pub const SKEW: Self = Self::new([
         Pos::new(-1, 1),
         Pos::new(0, 1),
         Pos::new(0, 0),
         Pos::new(1, 0),
-    ], MAGENTA);
+    ], Color::MAGENTA);
     /// All free tetrominos.
     pub const ALL: [Self; 5] = [Self::STRAIGHT, Self::SQUARE, Self::T, Self::L, Self::SKEW];
 
