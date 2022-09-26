@@ -1,4 +1,6 @@
+mod controller;
 mod model;
+mod updater;
 mod utils;
 
 use std::env;
