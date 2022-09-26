@@ -1,3 +1,6 @@
+mod model;
+mod utils;
+
 use std::env;
 
 use lighthouse_client::{Authentication, Lighthouse, Result};
