@@ -460,7 +460,9 @@ dependencies = [
 name = "litris"
 version = "0.1.0"
 dependencies = [
+ "futures",
  "lighthouse-client",
+ "rand",
  "tokio",
  "tracing",
  "tracing-subscriber",

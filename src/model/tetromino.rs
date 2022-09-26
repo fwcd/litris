@@ -1,6 +1,7 @@
 use lighthouse_client::{Pos, Color};
 
 /// A game piece composed of four pixels connected orthogonally.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Tetromino {
     /// The relative positions of the pixels.
     pixels: [Pos; 4],

@@ -8,5 +8,7 @@ edition = "2021"
 [dependencies]
 lighthouse-client = { version = "0.4", features = ["tokio"] }
 tokio = { version = "1.21", features = ["rt", "macros"] }
+futures = "0.3"
 tracing = "0.1"
+rand = "0.8"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "std"] }
