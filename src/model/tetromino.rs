@@ -44,6 +44,8 @@ impl Tetromino {
         Pos::new(0, 0),
         Pos::new(1, 0),
     ], MAGENTA);
+    /// All free tetrominos.
+    pub const ALL: [Self; 5] = [Self::STRAIGHT, Self::SQUARE, Self::T, Self::L, Self::SKEW];
 
     /// Creates a new tetromino from the given configuration.
     pub const fn new(pixels: [Pos; 4], color: Color) -> Self {
