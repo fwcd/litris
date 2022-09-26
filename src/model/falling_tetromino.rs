@@ -20,14 +20,16 @@ impl FallingTetromino {
         Self { tetromino, pos, rotation }
     }
 
-    // TODO: Add random_with for customizing the rng
-
-    /// Creates a random tetromino.
-    pub fn random() -> Self {
-        let mut rng = &mut thread_rng();
-        let tetromino = *Tetromino::ALL.choose(&mut rng).unwrap();
+    /// Creates a random tetromino with the given rng.
+    pub fn random_with(rng: &mut impl Rng) -> Self {
+        let tetromino = *Tetromino::ALL.choose(rng).unwrap();
         let pos = rng.gen();
-        let rotation = Rotation::random_cardinal();
+        let rotation = Rotation::random_cardinal_with(rng);
         Self::new(tetromino, pos, rotation)
+    }
+
+    /// Creates a random tetromino with the default thread-local rng.
+    pub fn random() -> Self {
+        Self::random_with(&mut thread_rng())
     }
 }
