@@ -21,7 +21,8 @@ impl State {
     pub fn render_to(&self, frame: &mut Frame) {
         for y in 0..LIGHTHOUSE_ROWS {
             for x in 0..LIGHTHOUSE_COLS {
-                frame.set(x, y, self.board[Pos::new(x as i32, y as i32)].unwrap_or(Color::BLACK))
+                let pos = Pos::new(x as i32, y as i32);
+                frame[pos] = self.board[pos].unwrap_or(Color::BLACK);
             }
         }
     }
