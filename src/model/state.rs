@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use lighthouse_client::{Frame, LIGHTHOUSE_ROWS, LIGHTHOUSE_COLS, Pos, Color, Delta};
+use lighthouse_client::{Frame, LIGHTHOUSE_ROWS, LIGHTHOUSE_COLS, Pos, Color, Delta, Rotation};
 
 use super::{Board, Key};
 
@@ -39,6 +39,11 @@ impl State {
         frame
     }
 
+    /// Rotates the falling tetromino.
+    pub fn rotate_falling(&mut self, rotation: Rotation) {
+        self.board.rotate_falling(rotation)
+    }
+
     /// Moves the falling tetromino.
     pub fn move_falling(&mut self, delta: Delta) {
         self.board.move_falling(delta)
@@ -58,6 +63,7 @@ impl State {
     pub fn input_tick(&mut self) {
         for key in self.keys.clone() {
             match key {
+                Key::Up => self.rotate_falling(Rotation::CW_90),
                 Key::Left => self.move_falling(Delta::LEFT),
                 Key::Right => self.move_falling(Delta::RIGHT),
                 Key::Down => self.move_falling(Delta::DOWN),

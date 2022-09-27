@@ -29,6 +29,11 @@ impl FallingTetromino {
         self.pos += delta;
     }
 
+    /// Rotates by the given delta.
+    pub fn rotate_by(&mut self, rotation: Rotation) {
+        self.rotation = rotation * self.rotation;
+    }
+
     /// The underlying tetromino.
     pub fn tetromino(&self) -> Tetromino {
         self.tetromino

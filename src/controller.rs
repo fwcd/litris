@@ -10,6 +10,7 @@ pub async fn run(mut stream: impl Stream<Item = ServerMessage> + Unpin, shared_s
         if let Payload::InputEvent(event) = msg.payload {
             let opt_key = match event.key {
                 Some(37) => Some(Key::Left),
+                Some(38) => Some(Key::Up),
                 Some(39) => Some(Key::Right),
                 Some(40) => Some(Key::Down),
                 _ => None,

@@ -38,6 +38,11 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
         self.falling.move_by(delta);
     }
 
+    /// Rotates the falling tetromino.
+    pub fn rotate_falling(&mut self, rotation: Rotation) {
+        self.falling.rotate_by(rotation);
+    }
+
     /// Fetches the color at the given position.
     pub fn get(&self, pos: Pos) -> Option<Color> {
         if self.falling.contains(pos) {
