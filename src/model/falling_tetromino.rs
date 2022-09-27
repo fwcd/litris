@@ -1,22 +1,24 @@
-use lighthouse_client::{Pos, Rotation, Delta};
+use lighthouse_client::{Pos, Rotation, Delta, Color};
 
 use super::Tetromino;
 
 /// A positioned, rotated tetromino.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct FallingTetromino {
-    /// The shape and color of the tetromino.
+    /// The shape of the tetromino.
     tetromino: Tetromino,
     /// The position on the board.
     pos: Pos,
     /// The rotation.
     rotation: Rotation,
+    /// The color of the tetromino.
+    color: Color,
 }
 
 impl FallingTetromino {
     /// Creates a new falling tetromino with the given configuration.
-    pub const fn new(tetromino: Tetromino, pos: Pos, rotation: Rotation) -> Self {
-        Self { tetromino, pos, rotation }
+    pub const fn new(tetromino: Tetromino, pos: Pos, rotation: Rotation, color: Color) -> Self {
+        Self { tetromino, pos, rotation, color }
     }
 
     /// Falls by one pixel.
@@ -37,6 +39,11 @@ impl FallingTetromino {
     /// The underlying tetromino.
     pub fn tetromino(&self) -> Tetromino {
         self.tetromino
+    }
+
+    /// The color of the tetromino.
+    pub fn color(&self) -> Color {
+        self.color
     }
 
     /// The positions occupied by this falling tetromino.

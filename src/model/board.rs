@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use lighthouse_client::{Color, Pos, Rotation, LIGHTHOUSE_ROWS, LIGHTHOUSE_COLS, Rect, Delta};
+use rand::{thread_rng, Rng};
 
 use super::{FallingTetromino, Tetromino};
 
@@ -24,10 +25,12 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
 
     /// Creates a new falling tetromino.
     fn new_falling_tetromino() -> FallingTetromino {
-        let tetromino = Tetromino::random();
+        let mut rng = thread_rng();
+        let tetromino = Tetromino::random_with(&mut rng);
         let pos = Pos::new(WIDTH as i32 / 2, 1);
         let rotation = Rotation::IDENTITY;
-        FallingTetromino::new(tetromino, pos, rotation)
+        let color = rng.gen();
+        FallingTetromino::new(tetromino, pos, rotation, color)
     }
 
     /// Moves the falling tetromino.
@@ -59,7 +62,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
 
     fn place_falling(&mut self) {
         for pos in self.falling.pixels() {
-            self.fields[pos.y as usize][pos.x as usize] = Some(self.falling.tetromino().color);
+            self.fields[pos.y as usize][pos.x as usize] = Some(self.falling.color());
         }
     }
 
@@ -97,7 +100,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
     /// Fetches the color at the given position.
     pub fn get(&self, pos: Pos) -> Option<Color> {
         if self.falling.contains(pos) {
-            Some(self.falling.tetromino().color)
+            Some(self.falling.color())
         } else {
             self.get_field(pos)
         }
