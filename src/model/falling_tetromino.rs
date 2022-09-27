@@ -1,5 +1,4 @@
-use lighthouse_client::{Pos, Rotation};
-use rand::{seq::SliceRandom, thread_rng, Rng};
+use lighthouse_client::{Pos, Rotation, Delta};
 
 use super::Tetromino;
 
@@ -20,16 +19,28 @@ impl FallingTetromino {
         Self { tetromino, pos, rotation }
     }
 
-    /// Creates a random tetromino with the given rng.
-    pub fn random_with(rng: &mut impl Rng) -> Self {
-        let tetromino = *Tetromino::ALL.choose(rng).unwrap();
-        let pos = rng.gen();
-        let rotation = Rotation::random_cardinal_with(rng);
-        Self::new(tetromino, pos, rotation)
+    /// Falls by one pixel.
+    pub fn fall(&mut self) {
+        self.pos += Delta::DOWN;
     }
 
-    /// Creates a random tetromino with the default thread-local rng.
-    pub fn random() -> Self {
-        Self::random_with(&mut thread_rng())
+    /// Moves by the given delta.
+    pub fn move_by(&mut self, delta: Delta) {
+        self.pos += delta;
+    }
+
+    /// The underlying tetromino.
+    pub fn tetromino(&self) -> Tetromino {
+        self.tetromino
+    }
+
+    /// The positions occupied by this falling tetromino.
+    pub fn pixels(&self) -> [Pos; 4] {
+        self.tetromino.pixels.map(|d| self.pos + self.rotation * d)
+    }
+
+    /// Whether this falling tetromino contains the given position.
+    pub fn contains(&self, pos: Pos) -> bool {
+        self.pixels().contains(&pos)
     }
 }

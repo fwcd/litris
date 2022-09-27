@@ -1,8 +1,6 @@
-use std::ops::{Index, IndexMut};
+use lighthouse_client::{Color, Pos, Rotation, Delta};
 
-use lighthouse_client::{Color, Pos};
-
-use super::FallingTetromino;
+use super::{FallingTetromino, Tetromino};
 
 /// A game board.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -18,21 +16,34 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
     pub fn new() -> Self {
         Board {
             fields: [[None; WIDTH]; HEIGHT],
-            falling: FallingTetromino::random(),
+            falling: Self::new_falling_tetromino(),
         }
     }
-}
 
-impl<const WIDTH: usize, const HEIGHT: usize> Index<Pos> for Board<WIDTH, HEIGHT> {
-    type Output = Option<Color>;
-
-    fn index(&self, pos: Pos) -> &Self::Output {
-        &self.fields[pos.y as usize][pos.x as usize]
+    /// Creates a new falling tetromino.
+    fn new_falling_tetromino() -> FallingTetromino {
+        let tetromino = Tetromino::random();
+        let pos = Pos::new(WIDTH as i32 / 2, 0);
+        let rotation = Rotation::IDENTITY;
+        FallingTetromino::new(tetromino, pos, rotation)
     }
-}
 
-impl<const WIDTH: usize, const HEIGHT: usize> IndexMut<Pos> for Board<WIDTH, HEIGHT> {
-    fn index_mut(&mut self, pos: Pos) -> &mut Self::Output {
-        &mut self.fields[pos.y as usize][pos.x as usize]
+    /// Performs a game tick.
+    pub fn tick(&mut self) {
+        self.falling.fall();
+    }
+
+    /// Moves the falling tetromino.
+    pub fn move_falling(&mut self, delta: Delta) {
+        self.falling.move_by(delta);
+    }
+
+    /// Fetches the color at the given position.
+    pub fn get(&self, pos: Pos) -> Option<Color> {
+        if self.falling.contains(pos) {
+            Some(self.falling.tetromino().color)
+        } else {
+            self.fields[pos.y as usize][pos.x as usize]
+        }
     }
 }

@@ -5,13 +5,13 @@ mod updater;
 use std::{env, sync::Arc};
 
 use futures::lock::Mutex;
-use lighthouse_client::{Authentication, Lighthouse, Result};
+use lighthouse_client::{Authentication, Lighthouse};
 use model::State;
 use tokio::task;
 use tracing_subscriber::EnvFilter;
 
 #[tokio::main(flavor = "current_thread")]
-async fn main() -> Result<()> {
+async fn main() {
     tracing_subscriber::fmt()
         .compact()
         .with_env_filter(EnvFilter::from_default_env())
@@ -22,11 +22,12 @@ async fn main() -> Result<()> {
     let auth = Authentication::new(&username, &token);
     let state = Arc::new(Mutex::new(State::new()));
     
-    let mut lh = Lighthouse::connect_with_tokio(auth).await?;
-    let stream = lh.stream_model().await?;
+    let mut lh = Lighthouse::connect_with_tokio(auth).await.unwrap();
+    let stream = lh.stream_model().await.unwrap();
 
-    task::spawn(updater::run(lh, state.clone()));
-    task::spawn(controller::run(stream, state)).await;
+    let updater_handle = task::spawn(updater::run(lh, state.clone()));
+    let controller_handle = task::spawn(controller::run(stream, state));
 
-    Ok(())
+    updater_handle.await.unwrap().unwrap();
+    controller_handle.await.unwrap();
 }
