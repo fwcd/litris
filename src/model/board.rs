@@ -97,7 +97,10 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
             self.fields[pos.y as usize][pos.x as usize] = Some(self.falling.color());
         }
         self.falling = Self::new_falling_tetromino();
-        self.clear_full_rows()
+        self.clear_full_rows();
+        if self.collides_with(self.falling) {
+            self.game_over = true;
+        }
     }
 
     /// Whether the game is over.
