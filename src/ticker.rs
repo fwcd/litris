@@ -7,7 +7,7 @@ use tracing::debug;
 
 use crate::model::State;
 
-pub async fn run(shared_state: Arc<Mutex<State>>) {
+pub async fn run<const W: usize, const H: usize>(shared_state: Arc<Mutex<State<W, H>>>) {
     loop {
         debug!("Ticking");
 

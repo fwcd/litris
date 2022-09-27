@@ -6,7 +6,7 @@ mod ticker;
 use std::{env, sync::Arc};
 
 use futures::lock::Mutex;
-use lighthouse_client::{Authentication, Lighthouse};
+use lighthouse_client::{Authentication, Lighthouse, LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS};
 use model::State;
 use tokio::task;
 use tracing::{info, metadata::LevelFilter};
@@ -31,7 +31,7 @@ async fn main() {
     let username = env_var("LIGHTHOUSE_USER");
     let token = env_var("LIGHTHOUSE_TOKEN");
     let auth = Authentication::new(&username, &token);
-    let state = Arc::new(Mutex::new(State::new()));
+    let state = Arc::new(Mutex::new(State::<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>::new()));
     
     let mut lh = Lighthouse::connect_with_tokio(auth).await.unwrap();
     info!("Connected to the lighthouse.");

@@ -8,20 +8,20 @@ use super::{FallingTetromino, Tetromino};
 
 /// A game board.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Board<const WIDTH: usize, const HEIGHT: usize> {
+pub struct Board<const W: usize, const H: usize> {
     /// The board's fields, containing placed tetrominos.
-    fields: [[Option<Color>; WIDTH]; HEIGHT],
+    fields: [[Option<Color>; W]; H],
     /// The in-flight tetromino.
     falling: FallingTetromino,
     /// Whether the game is over.
     game_over: bool,
 }
 
-impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
+impl<const W: usize, const H: usize> Board<W, H> {
     /// Creates an empty board with a random falling tetromino.
     pub fn new() -> Self {
         Board {
-            fields: [[None; WIDTH]; HEIGHT],
+            fields: [[None; W]; H],
             falling: Self::new_falling_tetromino(),
             game_over: false,
         }
@@ -31,7 +31,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
     fn new_falling_tetromino() -> FallingTetromino {
         let mut rng = thread_rng();
         let tetromino = Tetromino::random_with(&mut rng);
-        let pos = Pos::new(WIDTH as i32 / 2, 1);
+        let pos = Pos::new(W as i32 / 2, 1);
         let rotation = Rotation::IDENTITY;
         let color = *[
             Color::MAGENTA,
@@ -69,13 +69,13 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
 
     /// The bounding rectangle.
     pub fn bounds(&self) -> Rect {
-        Rect::new(Pos::ZERO, Delta::new(WIDTH as i32, HEIGHT as i32))
+        Rect::new(Pos::ZERO, Delta::new(W as i32, H as i32))
     }
 
     /// The occupied pixels.
     pub fn occupied_pixels(&self) -> HashSet<Pos> {
-        (0..HEIGHT as i32)
-            .flat_map(|y| (0..WIDTH as i32).map(move |x| Pos::new(x, y)))
+        (0..H as i32)
+            .flat_map(|y| (0..W as i32).map(move |x| Pos::new(x, y)))
             .filter(|&p| self.get_field(p).is_some())
             .collect()
     }
@@ -84,7 +84,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
         let mut fields_vec = self.fields.into_iter()
             .rev()
             .filter(|row| row.iter().any(|c| c.is_none()))
-            .pad_using(HEIGHT, |_| [None; WIDTH])
+            .pad_using(H, |_| [None; W])
             .collect::<Vec<_>>();
         fields_vec.reverse();
         self.fields = fields_vec

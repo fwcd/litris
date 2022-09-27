@@ -1,19 +1,19 @@
 use std::collections::HashSet;
 
-use lighthouse_client::{Frame, LIGHTHOUSE_ROWS, LIGHTHOUSE_COLS, Pos, Color, Delta, Rotation};
+use lighthouse_client::{Frame, Pos, Color, Delta, Rotation};
 
 use super::{Board, Key};
 
 /// The state of a game.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct State {
+pub struct State<const W: usize, const H: usize> {
     /// The game board.
-    board: Board<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>,
+    board: Board<W, H>,
     /// Pressed keys.
     keys: HashSet<Key>, // TODO: Use a bit set?
 }
 
-impl State {
+impl<const W: usize, const H: usize> State<W, H> {
     /// Creates an empty game.
     pub fn new() -> Self {
         State {
@@ -29,8 +29,8 @@ impl State {
 
     /// Renders the state to the given frame.
     pub fn render_to(&self, frame: &mut Frame) {
-        for y in 0..LIGHTHOUSE_ROWS {
-            for x in 0..LIGHTHOUSE_COLS {
+        for y in 0..H {
+            for x in 0..W {
                 let pos = Pos::new(x as i32, y as i32);
                 frame[pos] = self.board.get(pos).unwrap_or(Color::BLACK);
             }
@@ -54,7 +54,7 @@ impl State {
         self.keys.remove(&key);
     }
 
-    fn handle(key: Key, board: &mut Board<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>) {
+    fn handle(key: Key, board: &mut Board<W, H>) {
         if !board.game_over() {
             match key {
                 Key::Up => board.rotate_falling(Rotation::CW_90),

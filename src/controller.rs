@@ -5,7 +5,10 @@ use lighthouse_client::{ServerMessage, Payload};
 
 use crate::model::{State, Key};
 
-pub async fn run(mut stream: impl Stream<Item = ServerMessage> + Unpin, shared_state: Arc<Mutex<State>>) {
+pub async fn run<const W: usize, const H: usize>(
+    mut stream: impl Stream<Item = ServerMessage> + Unpin,
+    shared_state: Arc<Mutex<State<W, H>>>
+) {
     while let Some(msg) = stream.next().await {
         if let Payload::InputEvent(event) = msg.payload {
             let opt_key = match event.key {

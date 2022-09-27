@@ -7,7 +7,10 @@ use tracing::debug;
 
 use crate::model::State;
 
-pub async fn run(mut lh: Lighthouse<TokioWebSocket>, shared_state: Arc<Mutex<State>>) -> Result<()> {
+pub async fn run<const W: usize, const H: usize>(
+    mut lh: Lighthouse<TokioWebSocket>,
+    shared_state: Arc<Mutex<State<W, H>>>
+) -> Result<()> {
     loop {
         debug!("Rendering");
 
