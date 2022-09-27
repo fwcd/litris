@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
-use lighthouse_client::{Color, Pos, Rotation, LIGHTHOUSE_ROWS, LIGHTHOUSE_COLS, Rect, Delta};
+use itertools::Itertools;
+use lighthouse_client::{Color, Pos, Rotation, Rect, Delta};
 use rand::{thread_rng, seq::SliceRandom};
 
 use super::{FallingTetromino, Tetromino};
@@ -64,16 +65,30 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
 
     /// The occupied pixels.
     pub fn occupied_pixels(&self) -> HashSet<Pos> {
-        (0..LIGHTHOUSE_ROWS as i32)
-            .flat_map(|y| (0..LIGHTHOUSE_COLS as i32).map(move |x| Pos::new(x, y)))
+        (0..HEIGHT as i32)
+            .flat_map(|y| (0..WIDTH as i32).map(move |x| Pos::new(x, y)))
             .filter(|&p| self.get_field(p).is_some())
             .collect()
+    }
+
+    fn clear_full_rows(&mut self) {
+        let mut fields_vec = self.fields.into_iter()
+            .rev()
+            .filter(|row| row.iter().any(|c| c.is_none()))
+            .pad_using(HEIGHT, |_| [None; WIDTH])
+            .collect::<Vec<_>>();
+        fields_vec.reverse();
+        self.fields = fields_vec
+            .try_into()
+            .unwrap()
     }
 
     fn place_falling(&mut self) {
         for pos in self.falling.pixels() {
             self.fields[pos.y as usize][pos.x as usize] = Some(self.falling.color());
         }
+        self.falling = Self::new_falling_tetromino();
+        self.clear_full_rows()
     }
 
     fn falls_freely(&self) -> bool {
@@ -91,7 +106,6 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
             *self = next;
         } else {
             self.place_falling();
-            self.falling = Self::new_falling_tetromino();
             if !self.falls_freely() {
                 self.game_over = true;
             }
