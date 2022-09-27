@@ -1,4 +1,4 @@
-use lighthouse_client::{Color, Pos, Rotation, Delta};
+use lighthouse_client::{Color, Pos, Rotation};
 
 use super::{FallingTetromino, Tetromino};
 
@@ -28,19 +28,9 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
         FallingTetromino::new(tetromino, pos, rotation)
     }
 
-    /// Performs a game tick.
-    pub fn tick(&mut self) {
-        self.falling.fall();
-    }
-
-    /// Moves the falling tetromino.
-    pub fn move_falling(&mut self, delta: Delta) {
-        self.falling.move_by(delta);
-    }
-
-    /// Rotates the falling tetromino.
-    pub fn rotate_falling(&mut self, rotation: Rotation) {
-        self.falling.rotate_by(rotation);
+    /// Fetches the falling tetromino mutably.
+    pub fn falling_mut(&mut self) -> &mut FallingTetromino {
+        &mut self.falling
     }
 
     /// Fetches the color at the given position.

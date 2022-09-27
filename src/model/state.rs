@@ -39,16 +39,6 @@ impl State {
         frame
     }
 
-    /// Rotates the falling tetromino.
-    pub fn rotate_falling(&mut self, rotation: Rotation) {
-        self.board.rotate_falling(rotation)
-    }
-
-    /// Moves the falling tetromino.
-    pub fn move_falling(&mut self, delta: Delta) {
-        self.board.move_falling(delta)
-    }
-
     /// Presses a key.
     pub fn press(&mut self, key: Key) {
         self.keys.insert(key);
@@ -61,18 +51,19 @@ impl State {
 
     /// Performs an input tick, i.e. updates held keys.
     pub fn input_tick(&mut self) {
-        for key in self.keys.clone() {
+        let falling = self.board.falling_mut();
+        for key in &self.keys {
             match key {
-                Key::Up => self.rotate_falling(Rotation::CW_90),
-                Key::Left => self.move_falling(Delta::LEFT),
-                Key::Right => self.move_falling(Delta::RIGHT),
-                Key::Down => self.move_falling(Delta::DOWN),
+                Key::Up => falling.rotate_by(Rotation::CW_90),
+                Key::Left => falling.move_by(Delta::LEFT),
+                Key::Right => falling.move_by(Delta::RIGHT),
+                Key::Down => falling.move_by(Delta::DOWN),
             }
         }
     }
 
     /// Performs a game tick.
     pub fn tick(&mut self) {
-        self.board.tick();
+        self.board.falling_mut().fall();
     }
 }
