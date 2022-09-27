@@ -32,12 +32,21 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
 
     /// Moves the falling tetromino.
     pub fn move_falling(&mut self, delta: Delta) {
-        self.falling.move_by(delta);
+        self.with_place_check(|board| {
+            board.falling.move_by(delta);
+        });
     }
 
     /// Rotates the falling tetromino.
     pub fn rotate_falling(&mut self, rotation: Rotation) {
-        self.falling.rotate_by(rotation);
+        self.with_place_check(|board| {
+            board.falling.rotate_by(rotation);
+        });
+    }
+
+    /// The bounding rectangle.
+    pub fn bounds(&self) -> Rect {
+        Rect::new(Pos::ZERO, Delta::new(WIDTH as i32, HEIGHT as i32))
     }
 
     /// The occupied pixels.
@@ -48,27 +57,36 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
             .collect()
     }
 
-    fn can_fall_further(&self) -> bool {
-        let next_pixels = self.falling.next().pixels();
-
-        next_pixels.into_iter().all(|p| p.y < HEIGHT as i32)
-        && self.occupied_pixels().is_disjoint(&next_pixels.into_iter().collect())
-    }
-
     fn place_falling(&mut self) {
         for pos in self.falling.pixels() {
             self.fields[pos.y as usize][pos.x as usize] = Some(self.falling.tetromino().color);
         }
     }
 
-    /// Lets the tetromino fall.
-    pub fn fall(&mut self) {
-        if self.can_fall_further() {
-            self.falling.fall()
+    fn falls_freely(&self) -> bool {
+        let bounds = self.bounds();
+        let falling_pixels = self.falling.pixels();
+
+        falling_pixels.into_iter().all(|p| bounds.contains(p))
+        && self.occupied_pixels().is_disjoint(&falling_pixels.into_iter().collect())
+    }
+
+    fn with_place_check(&mut self, action: impl FnOnce(&mut Self)) {
+        let mut next = *self;
+        action(&mut next);
+        if next.falls_freely() {
+            *self = next;
         } else {
             self.place_falling();
             self.falling = Self::new_falling_tetromino();
         }
+    }
+
+    /// Lets the tetromino fall.
+    pub fn fall(&mut self) {
+        self.with_place_check(|board| {
+            board.falling.fall();
+        });
     }
 
     /// Fetches the field at the given position.
