@@ -17,6 +17,12 @@ pub struct Board<const WIDTH: usize, const HEIGHT: usize> {
     game_over: bool,
 }
 
+enum FallState {
+    Falling,
+    OutOfBounds,
+    OnGround,
+}
+
 impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
     /// Creates an empty board with a random falling tetromino.
     pub fn new() -> Self {
@@ -91,24 +97,32 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
         self.clear_full_rows()
     }
 
-    fn falls_freely(&self) -> bool {
+    fn fall_state(&self) -> FallState {
         let bounds = self.bounds();
         let falling_pixels = self.falling.pixels();
 
-        falling_pixels.into_iter().all(|p| bounds.contains(p))
-        && self.occupied_pixels().is_disjoint(&falling_pixels.into_iter().collect())
+        if falling_pixels.iter().any(|p| !bounds.x_range().contains(&p.x)) {
+            FallState::OutOfBounds
+        } else if falling_pixels.into_iter().any(|p| !bounds.y_range().contains(&p.y))
+            || !self.occupied_pixels().is_disjoint(&falling_pixels.into_iter().collect()) {
+            FallState::OnGround
+        } else {
+            FallState::Falling
+        }
     }
 
     fn with_place_check(&mut self, action: impl FnOnce(&mut Self)) {
         let mut next = *self;
         action(&mut next);
-        if next.falls_freely() {
-            *self = next;
-        } else {
-            self.place_falling();
-            if !self.falls_freely() {
-                self.game_over = true;
-            }
+        match next.fall_state() {
+            FallState::Falling => *self = next,
+            FallState::OutOfBounds => {},
+            FallState::OnGround => {
+                self.place_falling();
+                if let FallState::OnGround = self.fall_state() {
+                    self.game_over = true;
+                }
+            },
         }
     }
 
