@@ -11,6 +11,13 @@ use model::State;
 use tokio::task;
 use tracing_subscriber::EnvFilter;
 
+fn env_var(var: &str) -> String {
+    match env::var(var) {
+        Ok(value) => value,
+        Err(e) => panic!("Please make sure to set the {} environment variable: {:?}", var, e),
+    }
+}
+
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     tracing_subscriber::fmt()
@@ -18,8 +25,8 @@ async fn main() {
         .with_env_filter(EnvFilter::from_default_env())
         .init();
 
-    let username = env::var("LIGHTHOUSE_USER").unwrap();
-    let token = env::var("LIGHTHOUSE_TOKEN").unwrap();
+    let username = env_var("LIGHTHOUSE_USER");
+    let token = env_var("LIGHTHOUSE_TOKEN");
     let auth = Authentication::new(&username, &token);
     let state = Arc::new(Mutex::new(State::new()));
     
