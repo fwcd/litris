@@ -19,7 +19,11 @@ pub async fn run(mut stream: impl Stream<Item = ServerMessage> + Unpin, shared_s
             if let Some(key) = opt_key {
                 let mut state = shared_state.lock().await;
                 if event.is_down {
-                    state.press(key);
+                    if key == Key::Up {
+                        state.click(key);
+                    } else {
+                        state.press(key);
+                    }
                 } else {
                     state.release(key);
                 }

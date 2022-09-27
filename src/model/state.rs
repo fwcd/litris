@@ -49,21 +49,29 @@ impl State {
         self.keys.remove(&key);
     }
 
+    fn handle(key: Key, board: &mut Board<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>) {
+        match key {
+            Key::Up => board.rotate_falling(Rotation::CW_90),
+            Key::Left => board.move_falling(Delta::LEFT),
+            Key::Right => board.move_falling(Delta::RIGHT),
+            Key::Down => board.fall(),
+        }
+    }
+
+    /// Clicks a key.
+    pub fn click(&mut self, key: Key) {
+        Self::handle(key, &mut self.board);
+    }
+
     /// Performs an input tick, i.e. updates held keys.
     pub fn input_tick(&mut self) {
-        let falling = self.board.falling_mut();
         for key in &self.keys {
-            match key {
-                Key::Up => falling.rotate_by(Rotation::CW_90),
-                Key::Left => falling.move_by(Delta::LEFT),
-                Key::Right => falling.move_by(Delta::RIGHT),
-                Key::Down => falling.move_by(Delta::DOWN),
-            }
+            Self::handle(*key, &mut self.board);
         }
     }
 
     /// Performs a game tick.
     pub fn tick(&mut self) {
-        self.board.falling_mut().fall();
+        self.board.fall();
     }
 }

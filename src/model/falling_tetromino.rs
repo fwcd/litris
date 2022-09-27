@@ -24,6 +24,13 @@ impl FallingTetromino {
         self.pos += Delta::DOWN;
     }
 
+    /// The tetromino after falling by one pixel.
+    pub fn next(self) -> Self {
+        let mut f = self;
+        f.fall();
+        f
+    }
+
     /// Moves by the given delta.
     pub fn move_by(&mut self, delta: Delta) {
         self.pos += delta;
