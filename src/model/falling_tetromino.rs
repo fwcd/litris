@@ -21,19 +21,22 @@ impl FallingTetromino {
         Self { tetromino, pos, rotation, color }
     }
 
-    /// Falls by one pixel.
-    pub fn fall(&mut self) {
+    /// The tetromino after falling one pixel down.
+    pub fn fallen(mut self) -> Self {
         self.pos += Delta::DOWN;
+        self
     }
 
-    /// Moves by the given delta.
-    pub fn move_by(&mut self, delta: Delta) {
+    /// The tetromino moved by the given delta.
+    pub fn moved_by(mut self, delta: Delta) -> Self {
         self.pos += delta;
+        self
     }
 
     /// Rotates by the given delta.
-    pub fn rotate_by(&mut self, rotation: Rotation) {
+    pub fn rotated_by(mut self, rotation: Rotation) -> Self {
         self.rotation = rotation * self.rotation;
+        self
     }
 
     /// The color of the tetromino.

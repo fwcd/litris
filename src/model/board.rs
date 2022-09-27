@@ -17,12 +17,6 @@ pub struct Board<const WIDTH: usize, const HEIGHT: usize> {
     game_over: bool,
 }
 
-enum FallState {
-    Falling,
-    OutOfBounds,
-    OnGround,
-}
-
 impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
     /// Creates an empty board with a random falling tetromino.
     pub fn new() -> Self {
@@ -52,16 +46,25 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
 
     /// Moves the falling tetromino.
     pub fn move_falling(&mut self, delta: Delta) {
-        self.with_place_check(|board| {
-            board.falling.move_by(delta);
-        });
+        let next = self.falling.moved_by(delta);
+        if !self.collides_with(next) {
+            self.falling = next;
+        }
     }
 
     /// Rotates the falling tetromino.
     pub fn rotate_falling(&mut self, rotation: Rotation) {
-        self.with_place_check(|board| {
-            board.falling.rotate_by(rotation);
-        });
+        let next = self.falling.rotated_by(rotation);
+        if !self.collides_with(next) {
+            self.falling = next;
+        }
+    }
+
+    /// Checks whether the given falling tetromino collides with the walls or placed fields.
+    fn collides_with(&self, falling: FallingTetromino) -> bool {
+        let bounds = self.bounds();
+        let occupied = self.occupied_pixels();
+        falling.pixels().into_iter().any(|p| !bounds.contains(p) || occupied.contains(&p))
     }
 
     /// The bounding rectangle.
@@ -97,35 +100,6 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
         self.clear_full_rows()
     }
 
-    fn fall_state(&self) -> FallState {
-        let bounds = self.bounds();
-        let falling_pixels = self.falling.pixels();
-
-        if falling_pixels.iter().any(|p| !bounds.x_range().contains(&p.x)) {
-            FallState::OutOfBounds
-        } else if falling_pixels.into_iter().any(|p| !bounds.y_range().contains(&p.y))
-            || !self.occupied_pixels().is_disjoint(&falling_pixels.into_iter().collect()) {
-            FallState::OnGround
-        } else {
-            FallState::Falling
-        }
-    }
-
-    fn with_place_check(&mut self, action: impl FnOnce(&mut Self)) {
-        let mut next = *self;
-        action(&mut next);
-        match next.fall_state() {
-            FallState::Falling => *self = next,
-            FallState::OutOfBounds => {},
-            FallState::OnGround => {
-                self.place_falling();
-                if let FallState::OnGround = self.fall_state() {
-                    self.game_over = true;
-                }
-            },
-        }
-    }
-
     /// Whether the game is over.
     pub fn game_over(&self) -> bool {
         self.game_over
@@ -133,9 +107,12 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
 
     /// Lets the tetromino fall.
     pub fn fall(&mut self) {
-        self.with_place_check(|board| {
-            board.falling.fall();
-        });
+        let next = self.falling.fallen();
+        if self.collides_with(next) {
+            self.place_falling();
+        } else {
+            self.falling = next;
+        }
     }
 
     /// Fetches the field at the given position.
