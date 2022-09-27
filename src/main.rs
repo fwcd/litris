@@ -1,6 +1,7 @@
 mod controller;
 mod model;
-mod updater;
+mod renderer;
+mod ticker;
 
 use std::{env, sync::Arc};
 
@@ -25,9 +26,11 @@ async fn main() {
     let mut lh = Lighthouse::connect_with_tokio(auth).await.unwrap();
     let stream = lh.stream_model().await.unwrap();
 
-    let updater_handle = task::spawn(updater::run(lh, state.clone()));
+    let renderer_handle = task::spawn(renderer::run(lh, state.clone()));
+    let ticker_handle = task::spawn(ticker::run(state.clone()));
     let controller_handle = task::spawn(controller::run(stream, state));
 
-    updater_handle.await.unwrap().unwrap();
+    renderer_handle.await.unwrap().unwrap();
+    ticker_handle.await.unwrap();
     controller_handle.await.unwrap();
 }
