@@ -27,25 +27,44 @@ impl Tetromino {
     pub const T: Self = Self::new([
         Delta::new(-1, 0),
         Delta::new(0, 0),
+        Delta::new(0, 1),
         Delta::new(1, 0),
-        Delta::new(1, 1),
     ]);
-    /// The L-tetromino.
-    pub const L: Self = Self::new([
+    /// The left L-tetromino.
+    pub const LEFT_L: Self = Self::new([
         Delta::new(0, -1),
         Delta::new(0, 0),
         Delta::new(0, 1),
         Delta::new(1, 1),
     ]);
-    /// The skew tetromino.
-    pub const SKEW: Self = Self::new([
+    /// The right L-tetromino.
+    pub const RIGHT_L: Self = Self::new([
+        Delta::new(0, -1),
+        Delta::new(0, 0),
+        Delta::new(0, 1),
+        Delta::new(-1, 1),
+    ]);
+    /// The bottom skew tetromino.
+    pub const BOTTOM_SKEW: Self = Self::new([
         Delta::new(-1, 1),
         Delta::new(0, 1),
         Delta::new(0, 0),
         Delta::new(1, 0),
     ]);
-    /// All free tetrominos.
-    pub const ALL: [Self; 5] = [Self::STRAIGHT, Self::SQUARE, Self::T, Self::L, Self::SKEW];
+    /// The top skew tetromino.
+    pub const TOP_SKEW: Self = Self::new([
+        Delta::new(-1, 0),
+        Delta::new(0, 0),
+        Delta::new(0, 1),
+        Delta::new(1, 1),
+    ]);
+    /// All seven standard tetrominos.
+    pub const ALL: [Self; 7] = [
+        Self::STRAIGHT, Self::SQUARE,
+        Self::LEFT_L, Self::RIGHT_L,
+        Self::T,
+        Self::TOP_SKEW, Self::BOTTOM_SKEW,
+    ];
 
     /// Creates a new tetromino from the given configuration.
     pub const fn new(pixels: [Delta; 4]) -> Self {
