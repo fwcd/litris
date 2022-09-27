@@ -1,5 +1,6 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, iter::repeat};
 
+use arrayvec::ArrayVec;
 use itertools::Itertools;
 use lighthouse_client::{Color, Pos, Rotation, Rect, Delta};
 use rand::{thread_rng, seq::SliceRandom};
@@ -80,16 +81,17 @@ impl<const W: usize, const H: usize> Board<W, H> {
             .collect()
     }
 
-    fn clear_full_rows(&mut self) {
-        let mut fields_vec = self.fields.into_iter()
-            .rev()
+    fn clear_full_rows(&mut self) -> usize {
+        let cleared = self.fields.into_iter()
             .filter(|row| row.iter().any(|c| c.is_none()))
-            .pad_using(H, |_| [None; W])
-            .collect::<Vec<_>>();
-        fields_vec.reverse();
-        self.fields = fields_vec
-            .try_into()
-            .unwrap()
+            .collect::<ArrayVec<_, H>>();
+        let cleared_count = H - cleared.len();
+        self.fields.iter_mut().set_from(
+            repeat([None; W])
+                .take(cleared_count)
+                .chain(cleared.into_iter())
+        );
+        cleared_count
     }
 
     fn place_falling(&mut self) {
