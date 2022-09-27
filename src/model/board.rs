@@ -4,6 +4,7 @@ use arrayvec::ArrayVec;
 use itertools::Itertools;
 use lighthouse_client::{Color, Pos, Rotation, Rect, Delta};
 use rand::{thread_rng, seq::SliceRandom};
+use tracing::info;
 
 use super::{FallingTetromino, Tetromino};
 
@@ -14,6 +15,8 @@ pub struct Board<const W: usize, const H: usize> {
     fields: [[Option<Color>; W]; H],
     /// The in-flight tetromino.
     falling: FallingTetromino,
+    /// The current score.
+    score: usize,
     /// Whether the game is over.
     game_over: bool,
 }
@@ -24,6 +27,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
         Board {
             fields: [[None; W]; H],
             falling: Self::new_falling_tetromino(),
+            score: 0,
             game_over: false,
         }
     }
@@ -98,10 +102,18 @@ impl<const W: usize, const H: usize> Board<W, H> {
         for pos in self.falling.pixels() {
             self.fields[pos.y as usize][pos.x as usize] = Some(self.falling.color());
         }
+
         self.falling = Self::new_falling_tetromino();
-        self.clear_full_rows();
+        let cleared_count = self.clear_full_rows();
+        self.score += 40 * cleared_count;
+
         if self.collides_with(self.falling) {
             self.game_over = true;
+            info!("Game over with score {}", self.score);
+        }
+
+        if cleared_count > 0 {
+            info!("Cleared {} row(s), score: {}", cleared_count, self.score)
         }
     }
 
