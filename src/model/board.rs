@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use lighthouse_client::{Color, Pos, Rotation, LIGHTHOUSE_ROWS, LIGHTHOUSE_COLS, Rect, Delta};
-use rand::{thread_rng, Rng};
+use rand::{thread_rng, Rng, seq::SliceRandom};
 
 use super::{FallingTetromino, Tetromino};
 
@@ -29,7 +29,14 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
         let tetromino = Tetromino::random_with(&mut rng);
         let pos = Pos::new(WIDTH as i32 / 2, 1);
         let rotation = Rotation::IDENTITY;
-        let color = rng.gen();
+        let color = *[
+            Color::MAGENTA,
+            Color::YELLOW,
+            Color::CYAN,
+            Color::GREEN,
+            Color::RED,
+            Color::WHITE,
+        ].choose(&mut rng).unwrap();
         FallingTetromino::new(tetromino, pos, rotation, color)
     }
 
