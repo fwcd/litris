@@ -12,12 +12,13 @@ pub async fn run(mut lh: Lighthouse<TokioWebSocket>, shared_state: Arc<Mutex<Sta
         debug!("Rendering");
 
         let frame = {
-            let state = shared_state.lock().await;
+            let mut state = shared_state.lock().await;
+            state.input_tick();
             state.render()
         };
 
         lh.put_model(frame).await?;
 
-        time::sleep(Duration::from_millis(100)).await;
+        time::sleep(Duration::from_millis(32)).await;
     }
 }

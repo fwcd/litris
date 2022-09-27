@@ -1,22 +1,27 @@
 use std::sync::Arc;
 
 use futures::{Stream, lock::Mutex, StreamExt};
-use lighthouse_client::{ServerMessage, Payload, Delta};
+use lighthouse_client::{ServerMessage, Payload};
 
-use crate::model::State;
+use crate::model::{State, Key};
 
 pub async fn run(mut stream: impl Stream<Item = ServerMessage> + Unpin, shared_state: Arc<Mutex<State>>) {
     while let Some(msg) = stream.next().await {
         if let Payload::InputEvent(event) = msg.payload {
-            if event.is_down {
-                let mut state = shared_state.lock().await;
+            let opt_key = match event.key {
+                Some(37) => Some(Key::Left),
+                Some(39) => Some(Key::Right),
+                Some(40) => Some(Key::Down),
+                _ => None,
+            };
 
-                match event.key {
-                    Some(37) => state.move_falling(Delta::LEFT),
-                    Some(39) => state.move_falling(Delta::RIGHT),
-                    Some(40) => state.move_falling(Delta::DOWN),
-                    _ => {},
-                };
+            if let Some(key) = opt_key {
+                let mut state = shared_state.lock().await;
+                if event.is_down {
+                    state.press(key);
+                } else {
+                    state.release(key);
+                }
             }
         }
     }

@@ -1,12 +1,16 @@
+use std::collections::HashSet;
+
 use lighthouse_client::{Frame, LIGHTHOUSE_ROWS, LIGHTHOUSE_COLS, Pos, Color, Delta};
 
-use super::Board;
+use super::{Board, Key};
 
 /// The state of a game.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct State {
     /// The game board.
     board: Board<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>,
+    /// Pressed keys.
+    keys: HashSet<Key>, // TODO: Use a bit set?
 }
 
 impl State {
@@ -14,6 +18,7 @@ impl State {
     pub fn new() -> Self {
         State {
             board: Board::new(),
+            keys: HashSet::new(),
         }
     }
 
@@ -37,6 +42,27 @@ impl State {
     /// Moves the falling tetromino.
     pub fn move_falling(&mut self, delta: Delta) {
         self.board.move_falling(delta)
+    }
+
+    /// Presses a key.
+    pub fn press(&mut self, key: Key) {
+        self.keys.insert(key);
+    }
+
+    /// Releases a key.
+    pub fn release(&mut self, key: Key) {
+        self.keys.remove(&key);
+    }
+
+    /// Performs an input tick, i.e. updates held keys.
+    pub fn input_tick(&mut self) {
+        for key in self.keys.clone() {
+            match key {
+                Key::Left => self.move_falling(Delta::LEFT),
+                Key::Right => self.move_falling(Delta::RIGHT),
+                Key::Down => self.move_falling(Delta::DOWN),
+            }
+        }
     }
 
     /// Performs a game tick.
