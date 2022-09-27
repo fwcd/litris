@@ -22,6 +22,11 @@ impl State {
         }
     }
 
+    /// Resets the game.
+    pub fn reset(&mut self) {
+        self.board = Board::new();
+    }
+
     /// Renders the state to the given frame.
     pub fn render_to(&self, frame: &mut Frame) {
         for y in 0..LIGHTHOUSE_ROWS {
@@ -74,7 +79,9 @@ impl State {
 
     /// Performs a game tick.
     pub fn tick(&mut self) {
-        if !self.board.game_over() {
+        if self.board.game_over() {
+            self.reset();
+        } else {
             self.board.fall();
         }
     }
