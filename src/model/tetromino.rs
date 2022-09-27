@@ -1,5 +1,5 @@
 use lighthouse_client::Delta;
-use rand::{Rng, thread_rng, seq::SliceRandom};
+use rand::{Rng, seq::SliceRandom};
 
 /// A game piece composed of four pixels connected orthogonally.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -55,10 +55,5 @@ impl Tetromino {
     /// Chooses a random tetromino with the given rng.
     pub fn random_with(rng: &mut impl Rng) -> Self {
         *Tetromino::ALL.choose(rng).unwrap()
-    }
-
-    /// Chooses a random tetromino with the default thread-local rng.
-    pub fn random() -> Self {
-        Self::random_with(&mut thread_rng())
     }
 }

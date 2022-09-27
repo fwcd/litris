@@ -50,11 +50,13 @@ impl State {
     }
 
     fn handle(key: Key, board: &mut Board<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>) {
-        match key {
-            Key::Up => board.rotate_falling(Rotation::CW_90),
-            Key::Left => board.move_falling(Delta::LEFT),
-            Key::Right => board.move_falling(Delta::RIGHT),
-            Key::Down => board.fall(),
+        if !board.game_over() {
+            match key {
+                Key::Up => board.rotate_falling(Rotation::CW_90),
+                Key::Left => board.move_falling(Delta::LEFT),
+                Key::Right => board.move_falling(Delta::RIGHT),
+                Key::Down => board.fall(),
+            }
         }
     }
 
@@ -72,6 +74,8 @@ impl State {
 
     /// Performs a game tick.
     pub fn tick(&mut self) {
-        self.board.fall();
+        if !self.board.game_over() {
+            self.board.fall();
+        }
     }
 }

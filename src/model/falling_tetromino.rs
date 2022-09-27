@@ -36,11 +36,6 @@ impl FallingTetromino {
         self.rotation = rotation * self.rotation;
     }
 
-    /// The underlying tetromino.
-    pub fn tetromino(&self) -> Tetromino {
-        self.tetromino
-    }
-
     /// The color of the tetromino.
     pub fn color(&self) -> Color {
         self.color

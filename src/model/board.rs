@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use lighthouse_client::{Color, Pos, Rotation, LIGHTHOUSE_ROWS, LIGHTHOUSE_COLS, Rect, Delta};
-use rand::{thread_rng, Rng, seq::SliceRandom};
+use rand::{thread_rng, seq::SliceRandom};
 
 use super::{FallingTetromino, Tetromino};
 
@@ -12,6 +12,8 @@ pub struct Board<const WIDTH: usize, const HEIGHT: usize> {
     fields: [[Option<Color>; WIDTH]; HEIGHT],
     /// The in-flight tetromino.
     falling: FallingTetromino,
+    /// Whether the game is over.
+    game_over: bool,
 }
 
 impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
@@ -20,6 +22,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
         Board {
             fields: [[None; WIDTH]; HEIGHT],
             falling: Self::new_falling_tetromino(),
+            game_over: false,
         }
     }
 
@@ -89,7 +92,15 @@ impl<const WIDTH: usize, const HEIGHT: usize> Board<WIDTH, HEIGHT> {
         } else {
             self.place_falling();
             self.falling = Self::new_falling_tetromino();
+            if !self.falls_freely() {
+                self.game_over = true;
+            }
         }
+    }
+
+    /// Whether the game is over.
+    pub fn game_over(&self) -> bool {
+        self.game_over
     }
 
     /// Lets the tetromino fall.
