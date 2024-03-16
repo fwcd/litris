@@ -34,7 +34,9 @@ async fn main() {
             .with_default_directive(LevelFilter::INFO.into())
             .from_env_lossy())
         .init();
-    
+
+    _ = dotenvy::dotenv();
+
     let args = Args::parse();
     let auth = Authentication::new(&args.username, &args.token);
     let state = Arc::new(Mutex::new(State::<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>::new()));
