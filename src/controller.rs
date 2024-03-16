@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use futures::{Stream, lock::Mutex, StreamExt};
-use lighthouse_client::{ServerMessage, Payload};
+use lighthouse_client::protocol::{ServerMessage, Payload};
 
 use crate::model::{State, Key};
 

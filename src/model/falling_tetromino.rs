@@ -1,4 +1,4 @@
-use lighthouse_client::{Pos, Rotation, Delta, Color};
+use lighthouse_client::protocol::{Pos, Rotation, Delta, Color};
 
 use super::Tetromino;
 

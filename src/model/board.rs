@@ -2,7 +2,7 @@ use std::{collections::HashSet, iter::repeat};
 
 use arrayvec::ArrayVec;
 use itertools::Itertools;
-use lighthouse_client::{Color, Pos, Rotation, Rect, Delta};
+use lighthouse_client::protocol::{Color, Pos, Rotation, Rect, Delta};
 use rand::{thread_rng, seq::SliceRandom};
 use tracing::info;
 

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use lighthouse_client::{Frame, Pos, Color, Delta, Rotation};
+use lighthouse_client::protocol::{Frame, Pos, Color, Delta, Rotation};
 
 use super::{Board, Key};
 

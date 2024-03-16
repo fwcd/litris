@@ -6,7 +6,7 @@ mod ticker;
 use std::{env, sync::Arc};
 
 use futures::lock::Mutex;
-use lighthouse_client::{Authentication, Lighthouse, LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS};
+use lighthouse_client::{Lighthouse, protocol::{Authentication, LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS}};
 use model::State;
 use tokio::task;
 use tracing::{info, metadata::LevelFilter};
