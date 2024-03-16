@@ -3,20 +3,27 @@ mod model;
 mod renderer;
 mod ticker;
 
-use std::{env, sync::Arc};
+use std::sync::Arc;
 
+use clap::Parser;
 use futures::lock::Mutex;
-use lighthouse_client::{Lighthouse, protocol::{Authentication, LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS}};
+use lighthouse_client::{Lighthouse, LIGHTHOUSE_URL, protocol::{Authentication, LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS}};
 use model::State;
 use tokio::task;
 use tracing::{info, metadata::LevelFilter};
 use tracing_subscriber::EnvFilter;
 
-fn env_var(var: &str) -> String {
-    match env::var(var) {
-        Ok(value) => value,
-        Err(e) => panic!("Please make sure to set the {} environment variable: {:?}", var, e),
-    }
+#[derive(Parser)]
+struct Args {
+    /// The username.
+    #[arg(short, long, env = "LIGHTHOUSE_USER")]
+    username: String,
+    /// The API token.
+    #[arg(short, long, env = "LIGHTHOUSE_TOKEN")]
+    token: String,
+    /// The server URL.
+    #[arg(long, env = "LIGHTHOUSE_URL", default_value = LIGHTHOUSE_URL)]
+    url: String,
 }
 
 #[tokio::main(flavor = "current_thread")]
@@ -28,12 +35,11 @@ async fn main() {
             .from_env_lossy())
         .init();
     
-    let username = env_var("LIGHTHOUSE_USER");
-    let token = env_var("LIGHTHOUSE_TOKEN");
-    let auth = Authentication::new(&username, &token);
+    let args = Args::parse();
+    let auth = Authentication::new(&args.username, &args.token);
     let state = Arc::new(Mutex::new(State::<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>::new()));
     
-    let mut lh = Lighthouse::connect_with_tokio(auth).await.unwrap();
+    let mut lh = Lighthouse::connect_with_tokio_to(&args.url, auth).await.unwrap();
     info!("Connected to the lighthouse.");
 
     let stream = lh.stream_model().await.unwrap();
