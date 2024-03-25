@@ -14,6 +14,7 @@ use tracing::{info, metadata::LevelFilter};
 use tracing_subscriber::EnvFilter;
 
 #[derive(Parser)]
+#[command(version)]
 struct Args {
     /// The username.
     #[arg(short, long, env = "LIGHTHOUSE_USER")]
