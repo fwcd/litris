@@ -46,11 +46,11 @@ async fn main() -> Result<()> {
     let lh = Lighthouse::connect_with_tokio_to(&args.url, auth).await?;
     info!("Connected to the lighthouse.");
 
-    let stream = lh.stream_model().await?;
+    let input = lh.stream_input().await?;
 
     let renderer_handle = task::spawn(renderer::run(lh, state.clone()));
     let ticker_handle = task::spawn(ticker::run(state.clone()));
-    let controller_handle = task::spawn(controller::run(stream, state));
+    let controller_handle = task::spawn(controller::run(input, state));
 
     renderer_handle.await??;
     ticker_handle.await?;
