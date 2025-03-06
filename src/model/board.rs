@@ -3,7 +3,7 @@ use std::{collections::HashSet, iter::repeat};
 use arrayvec::ArrayVec;
 use itertools::Itertools;
 use lighthouse_client::protocol::{Color, Delta, Pos, Rect, Rotation, Zero};
-use rand::{thread_rng, seq::SliceRandom};
+use rand::{self, seq::IndexedRandom};
 use tracing::info;
 
 use super::{FallingTetromino, Tetromino};
@@ -34,7 +34,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
 
     /// Creates a new falling tetromino.
     fn new_falling_tetromino() -> FallingTetromino {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         let tetromino = Tetromino::random_with(&mut rng);
         let pos = Pos::new(W as i32 / 2, 1);
         let rotation = Rotation::IDENTITY;

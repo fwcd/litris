@@ -13,8 +13,8 @@ lighthouse-client = { version = "5.0.2", features = ["tokio"] }
 tokio = { version = "1.21", features = ["rt", "macros", "time"] }
 futures = "0.3"
 tracing = "0.1"
-rand = "0.8"
-itertools = "0.12"
+rand = "0.9"
+itertools = "0.14.0"
 arrayvec = "0.7"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "std"] }
 clap = { version = "4.5", features = ["derive", "env"] }

@@ -1,5 +1,5 @@
 use lighthouse_client::protocol::Delta;
-use rand::{Rng, seq::SliceRandom};
+use rand::{seq::IndexedRandom, Rng};
 
 /// A game piece composed of four pixels connected orthogonally.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
