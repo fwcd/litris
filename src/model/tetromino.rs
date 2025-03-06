@@ -1,11 +1,11 @@
 use lighthouse_client::protocol::Delta;
-use rand::{Rng, seq::SliceRandom};
+use rand::{seq::IndexedRandom, Rng};
 
 /// A game piece composed of four pixels connected orthogonally.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Tetromino {
     /// The relative positions of the pixels.
-    pub pixels: [Delta; 4],
+    pub pixels: [Delta<i32>; 4],
 }
 
 impl Tetromino {
@@ -67,7 +67,7 @@ impl Tetromino {
     ];
 
     /// Creates a new tetromino from the given configuration.
-    pub const fn new(pixels: [Delta; 4]) -> Self {
+    pub const fn new(pixels: [Delta<i32>; 4]) -> Self {
         Self { pixels }
     }
 

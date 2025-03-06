@@ -2,8 +2,8 @@ use std::{collections::HashSet, iter::repeat};
 
 use arrayvec::ArrayVec;
 use itertools::Itertools;
-use lighthouse_client::protocol::{Color, Pos, Rotation, Rect, Delta};
-use rand::{thread_rng, seq::SliceRandom};
+use lighthouse_client::protocol::{Color, Delta, Pos, Rect, Rotation, Zero};
+use rand::{self, seq::IndexedRandom};
 use tracing::info;
 
 use super::{FallingTetromino, Tetromino};
@@ -34,7 +34,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
 
     /// Creates a new falling tetromino.
     fn new_falling_tetromino() -> FallingTetromino {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         let tetromino = Tetromino::random_with(&mut rng);
         let pos = Pos::new(W as i32 / 2, 1);
         let rotation = Rotation::IDENTITY;
@@ -50,7 +50,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// Moves the falling tetromino.
-    pub fn move_falling(&mut self, delta: Delta) {
+    pub fn move_falling(&mut self, delta: Delta<i32>) {
         let next = self.falling.moved_by(delta);
         if !self.collides_with(next) {
             self.falling = next;
@@ -58,7 +58,7 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// Rotates the falling tetromino.
-    pub fn rotate_falling(&mut self, rotation: Rotation) {
+    pub fn rotate_falling(&mut self, rotation: Rotation<i32>) {
         let next = self.falling.rotated_by(rotation);
         if !self.collides_with(next) {
             self.falling = next;
@@ -73,12 +73,12 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// The bounding rectangle.
-    pub fn bounds(&self) -> Rect {
+    pub fn bounds(&self) -> Rect<i32> {
         Rect::new(Pos::ZERO, Delta::new(W as i32, H as i32))
     }
 
     /// The occupied pixels.
-    pub fn occupied_pixels(&self) -> HashSet<Pos> {
+    pub fn occupied_pixels(&self) -> HashSet<Pos<i32>> {
         (0..H as i32)
             .flat_map(|y| (0..W as i32).map(move |x| Pos::new(x, y)))
             .filter(|&p| self.get_field(p).is_some())
@@ -133,12 +133,12 @@ impl<const W: usize, const H: usize> Board<W, H> {
     }
 
     /// Fetches the field at the given position.
-    fn get_field(&self, pos: Pos) -> Option<Color> {
+    fn get_field(&self, pos: Pos<i32>) -> Option<Color> {
         self.fields[pos.y as usize][pos.x as usize]
     }
 
     /// Fetches the color at the given position.
-    pub fn get(&self, pos: Pos) -> Option<Color> {
+    pub fn get(&self, pos: Pos<i32>) -> Option<Color> {
         if self.falling.contains(pos) {
             Some(self.falling.color())
         } else {
