@@ -42,7 +42,7 @@ async fn main() {
     let auth = Authentication::new(&args.username, &args.token);
     let state = Arc::new(Mutex::new(State::<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>::new()));
     
-    let mut lh = Lighthouse::connect_with_tokio_to(&args.url, auth).await.unwrap();
+    let lh = Lighthouse::connect_with_tokio_to(&args.url, auth).await.unwrap();
     info!("Connected to the lighthouse.");
 
     let stream = lh.stream_model().await.unwrap();
@@ -53,5 +53,5 @@ async fn main() {
 
     renderer_handle.await.unwrap().unwrap();
     ticker_handle.await.unwrap();
-    controller_handle.await.unwrap();
+    controller_handle.await.unwrap().unwrap();
 }

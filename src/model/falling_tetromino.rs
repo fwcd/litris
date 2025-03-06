@@ -8,16 +8,16 @@ pub struct FallingTetromino {
     /// The shape of the tetromino.
     tetromino: Tetromino,
     /// The position on the board.
-    pos: Pos,
+    pos: Pos<i32>,
     /// The rotation.
-    rotation: Rotation,
+    rotation: Rotation<i32>,
     /// The color of the tetromino.
     color: Color,
 }
 
 impl FallingTetromino {
     /// Creates a new falling tetromino with the given configuration.
-    pub const fn new(tetromino: Tetromino, pos: Pos, rotation: Rotation, color: Color) -> Self {
+    pub const fn new(tetromino: Tetromino, pos: Pos<i32>, rotation: Rotation<i32>, color: Color) -> Self {
         Self { tetromino, pos, rotation, color }
     }
 
@@ -28,13 +28,13 @@ impl FallingTetromino {
     }
 
     /// The tetromino moved by the given delta.
-    pub fn moved_by(mut self, delta: Delta) -> Self {
+    pub fn moved_by(mut self, delta: Delta<i32>) -> Self {
         self.pos += delta;
         self
     }
 
     /// Rotates by the given delta.
-    pub fn rotated_by(mut self, rotation: Rotation) -> Self {
+    pub fn rotated_by(mut self, rotation: Rotation<i32>) -> Self {
         self.rotation = rotation * self.rotation;
         self
     }
@@ -45,12 +45,12 @@ impl FallingTetromino {
     }
 
     /// The positions occupied by this falling tetromino.
-    pub fn pixels(&self) -> [Pos; 4] {
+    pub fn pixels(&self) -> [Pos<i32>; 4] {
         self.tetromino.pixels.map(|d| self.pos + self.rotation * d)
     }
 
     /// Whether this falling tetromino contains the given position.
-    pub fn contains(&self, pos: Pos) -> bool {
+    pub fn contains(&self, pos: Pos<i32>) -> bool {
         self.pixels().contains(&pos)
     }
 }
