@@ -19,3 +19,4 @@ arrayvec = "0.7"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "std"] }
 clap = { version = "4.5", features = ["derive", "env"] }
 dotenvy = "0.15.7"
+anyhow = "1.0.97"

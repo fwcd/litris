@@ -5,6 +5,7 @@ mod ticker;
 
 use std::sync::Arc;
 
+use anyhow::Result;
 use clap::Parser;
 use futures::lock::Mutex;
 use lighthouse_client::{Lighthouse, LIGHTHOUSE_URL, protocol::{Authentication, LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS}};
@@ -28,7 +29,7 @@ struct Args {
 }
 
 #[tokio::main(flavor = "current_thread")]
-async fn main() {
+async fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .compact()
         .with_env_filter(EnvFilter::builder()
@@ -42,16 +43,17 @@ async fn main() {
     let auth = Authentication::new(&args.username, &args.token);
     let state = Arc::new(Mutex::new(State::<LIGHTHOUSE_COLS, LIGHTHOUSE_ROWS>::new()));
     
-    let lh = Lighthouse::connect_with_tokio_to(&args.url, auth).await.unwrap();
+    let lh = Lighthouse::connect_with_tokio_to(&args.url, auth).await?;
     info!("Connected to the lighthouse.");
 
-    let stream = lh.stream_model().await.unwrap();
+    let stream = lh.stream_model().await?;
 
     let renderer_handle = task::spawn(renderer::run(lh, state.clone()));
     let ticker_handle = task::spawn(ticker::run(state.clone()));
     let controller_handle = task::spawn(controller::run(stream, state));
 
-    renderer_handle.await.unwrap().unwrap();
-    ticker_handle.await.unwrap();
-    controller_handle.await.unwrap().unwrap();
+    renderer_handle.await??;
+    ticker_handle.await?;
+    controller_handle.await??;
+    Ok(())
 }

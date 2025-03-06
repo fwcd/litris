@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use anyhow::Result;
 use futures::{Stream, lock::Mutex, StreamExt};
 use lighthouse_client::protocol::{Model, ServerMessage};
 
@@ -8,7 +9,7 @@ use crate::model::{State, Key};
 pub async fn run<const W: usize, const H: usize>(
     mut stream: impl Stream<Item = lighthouse_client::Result<ServerMessage<Model>>> + Unpin,
     shared_state: Arc<Mutex<State<W, H>>>
-) -> lighthouse_client::Result<()> {
+) -> Result<()> {
     while let Some(msg) = stream.next().await {
         if let Model::InputEvent(event) = msg?.payload {
             let opt_key = match event.key {
