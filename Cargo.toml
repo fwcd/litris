@@ -1,6 +1,6 @@
 [package]
 name = "litris"
-version = "1.0.4"
+version = "1.0.5"
 description = "Tetris-inspired game for Project Lighthouse"
 edition = "2021"
 license = "MIT"
